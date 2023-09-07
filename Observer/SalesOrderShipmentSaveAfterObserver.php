@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace MageOS\CommonAsyncEvents\Observer;
 
-use Magento\Customer\Model\Customer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\MessageQueue\PublisherInterface;

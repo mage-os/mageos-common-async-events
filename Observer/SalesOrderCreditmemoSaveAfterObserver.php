@@ -7,10 +7,10 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Framework\Serialize\Serializer\Json;
-use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Creditmemo;
 use MageOS\AsyncEvents\Helper\QueueMetadataInterface;
 
-class SalesOrderSaveAfterObserver implements ObserverInterface
+class SalesOrderCreditmemoSaveAfterObserver implements ObserverInterface
 {
     private Json $json;
     private PublisherInterface $publisher;
@@ -24,15 +24,18 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
     }
 
     /**
-     * @see @event sales_order_save_after
+     * @see @event sales_order_creditmemo_save_after
      */
     public function execute(Observer $observer)
     {
-        /** @var Order $order */
-        $order = $observer->getEvent()->getData('order');
-        $arguments = ['id' => $order->getIncrementId()];
+        /** @var Creditmemo $creditmemo */
+        $creditmemo = $observer->getEvent()->getData('creditmemo');
+        $arguments = ['id' => $creditmemo->getIncrementId()];
 
-        $eventIdentifier = $this->getEventIdentifier($order);
+        $eventIdentifier = $this->getEventIdentifier($creditmemo);
+        if ($eventIdentifier === null) {
+            return;
+        }
         $data = [$eventIdentifier, $this->json->serialize($arguments)];
 
         $this->publisher->publish(
@@ -41,14 +44,11 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
         );
     }
 
-    private function getEventIdentifier(Order $order): string
+    private function getEventIdentifier(Creditmemo $order): ?string
     {
         if (empty($order->getOrigData('entity_id'))) {
-            return 'sales.order.created';
+            return 'sales.creditmemo.created';
         }
-        if ($order->getState() !== $order->getOrigData('state')) {
-            return 'sales.order.state.updated';
-        }
-        return 'sales.order.updated';
+        return null;
     }
 }
