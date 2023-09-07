@@ -1,5 +1,11 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="MageOS_CommonAsyncEvents"/>
+    <module name="MageOS_CommonAsyncEvents">
+        <sequence>
+            <module name="MageOS_AsyncEvents"/>
+            <module name="Magento_Customer"/>
+            <module name="Magento_Sales"/>
+        </sequence>
+    </module>
 </config>

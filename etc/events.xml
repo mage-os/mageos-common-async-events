@@ -9,4 +9,8 @@
         <observer name="mageos_common_async_events_sales_order_save_after"
                   instance="MageOS\CommonAsyncEvents\Observer\SalesOrderSaveAfterObserver"/>
     </event>
+    <event name="sales_order_shipment_save_after">
+        <observer name="mageos_common_async_events_sales_order_shipment_save_after"
+                  instance="MageOS\CommonAsyncEvents\Observer\SalesOrderShipmentSaveAfterObserver"/>
+    </event>
 </config>
