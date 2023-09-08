@@ -4,7 +4,8 @@
   "type": "magento2-module",
   "require": {
     "php":  ">=7.4",
-    "magento/framework": "*"
+    "magento/framework": "*",
+    "mage-os/mageos-async-events": "*"
   },
   "repositories": [
     {
@@ -12,9 +13,6 @@
       "url": "https://repo.magento.com/"
     }
   ],
-  "require": {
-    "mage-os/mageos-async-events": "*"
-  },
   "require-dev": {
     "squizlabs/php_codesniffer": "~3.5",
     "magento/magento-coding-standard": "*"
