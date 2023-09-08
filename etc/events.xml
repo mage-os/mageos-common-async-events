@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="customer_save_after">
+        <observer name="mageos_common_async_events_customer_save_after"
+                  instance="MageOS\CommonAsyncEvents\Observer\CustomerSaveAfterObserver"/>
+    </event>
+    <event name="sales_order_save_after">
+        <observer name="mageos_common_async_events_sales_order_save_after"
+                  instance="MageOS\CommonAsyncEvents\Observer\SalesOrderSaveAfterObserver"/>
+    </event>
+    <event name="sales_order_shipment_save_after">
+        <observer name="mageos_common_async_events_sales_order_shipment_save_after"
+                  instance="MageOS\CommonAsyncEvents\Observer\SalesOrderShipmentSaveAfterObserver"/>
+    </event>
+    <event name="sales_order_invoice_save_after">
+        <observer name="mageos_common_async_events_sales_order_invoice_save_after"
+                  instance="MageOS\CommonAsyncEvents\Observer\SalesOrderInvoiceSaveAfterObserver"/>
+    </event>
+    <event name="sales_order_creditmemo_save_after">
+        <observer name="mageos_common_async_events_sales_order_creditmemo_save_after"
+                  instance="MageOS\CommonAsyncEvents\Observer\SalesOrderCreditmemoSaveAfterObserver"/>
+    </event>
+</config>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:MageOS_AsyncEvents:etc/async_events.xsd">
+    <async_event name="customer.updated">
+        <service class="Magento\Customer\Api\CustomerRepositoryInterface" method="getById"/>
+    </async_event>
+    <async_event name="sales.order.created">
+        <service class="Magento\Sales\Api\OrderRepositoryInterface" method="get"/>
+    </async_event>
+    <async_event name="sales.order.updated">
+        <service class="Magento\Sales\Api\OrderRepositoryInterface" method="get"/>
+    </async_event>
+    <async_event name="sales.shipment.created">
+        <service class="Magento\Sales\Api\ShipmentRepositoryInterface" method="get"/>
+    </async_event>
+    <async_event name="sales.invoice.created">
+        <service class="Magento\Sales\Api\InvoiceRepositoryInterface" method="get"/>
+    </async_event>
+    <async_event name="sales.creditmemo.created">
+        <service class="Magento\Sales\Api\CreditmemoRepositoryInterface" method="get"/>
+    </async_event>
+</config>
