@@ -26,7 +26,7 @@ class SalesOrderInvoiceSaveAfterObserver implements ObserverInterface
     /**
      * @see @event sales_order_invoice_save_after
      */
-    public function execute(Observer $observer)
+    public function execute(Observer $observer): void
     {
         /** @var Invoice $invoice */
         $invoice = $observer->getEvent()->getData('invoice');

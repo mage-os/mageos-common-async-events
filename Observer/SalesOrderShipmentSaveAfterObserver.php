@@ -26,7 +26,7 @@ class SalesOrderShipmentSaveAfterObserver implements ObserverInterface
     /**
      * @see @event sales_order_shipment_save_after
      */
-    public function execute(Observer $observer)
+    public function execute(Observer $observer): void
     {
         /** @var Shipment $shipment */
         $shipment = $observer->getEvent()->getData('shipment');

@@ -26,7 +26,7 @@ class CustomerSaveAfterObserver implements ObserverInterface
     /**
      * @see @event customer_save_after
      */
-    public function execute(Observer $observer)
+    public function execute(Observer $observer): void
     {
         /** @var Customer $customer */
         $customer = $observer->getEvent()->getData('customer');

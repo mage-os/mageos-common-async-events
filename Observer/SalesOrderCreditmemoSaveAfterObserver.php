@@ -26,7 +26,7 @@ class SalesOrderCreditmemoSaveAfterObserver implements ObserverInterface
     /**
      * @see @event sales_order_creditmemo_save_after
      */
-    public function execute(Observer $observer)
+    public function execute(Observer $observer): void
     {
         /** @var Creditmemo $creditmemo */
         $creditmemo = $observer->getEvent()->getData('creditmemo');

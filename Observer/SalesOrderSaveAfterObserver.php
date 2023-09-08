@@ -26,13 +26,16 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
     /**
      * @see @event sales_order_save_after
      */
-    public function execute(Observer $observer)
+    public function execute(Observer $observer): void
     {
         /** @var Order $order */
         $order = $observer->getEvent()->getData('order');
         $arguments = ['id' => $order->getIncrementId()];
 
         $eventIdentifier = $this->getEventIdentifier($order);
+        if ($eventIdentifier === null) {
+            return;
+        }
         $data = [$eventIdentifier, $this->json->serialize($arguments)];
 
         $this->publisher->publish(
@@ -41,14 +44,14 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
         );
     }
 
-    private function getEventIdentifier(Order $order): string
+    private function getEventIdentifier(Order $order): ?string
     {
         if (empty($order->getOrigData('entity_id'))) {
             return 'sales.order.created';
         }
         if ($order->getState() !== $order->getOrigData('state')) {
-            return 'sales.order.state.updated';
+            return 'sales.order.updated';
         }
-        return 'sales.order.updated';
+        return null;
     }
 }
