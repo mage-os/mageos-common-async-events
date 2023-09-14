@@ -20,7 +20,6 @@ class CustomerSaveAfterObserver implements ObserverInterface
     public function __construct(
         Json $json,
         PublisherInterface $publisher,
-        NewCustomersRegistry $newCustomersRegistry,
         ProcessedCustomersRegistry $processedCustomersRegistry
     ) {
         $this->json = $json;
