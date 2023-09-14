@@ -9,14 +9,12 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Framework\Serialize\Serializer\Json;
 use MageOS\AsyncEvents\Helper\QueueMetadataInterface;
-use MageOS\CommonAsyncEvents\Model\NewCustomersRegistry;
 use MageOS\CommonAsyncEvents\Model\ProcessedCustomersRegistry;
 
 class CustomerSaveAfterObserver implements ObserverInterface
 {
     private Json $json;
     private PublisherInterface $publisher;
-    private NewCustomersRegistry $newCustomersRegistry;
     private ProcessedCustomersRegistry $processedCustomersRegistry;
 
     public function __construct(
@@ -27,7 +25,6 @@ class CustomerSaveAfterObserver implements ObserverInterface
     ) {
         $this->json = $json;
         $this->publisher = $publisher;
-        $this->newCustomersRegistry = $newCustomersRegistry;
         $this->processedCustomersRegistry = $processedCustomersRegistry;
     }
 
@@ -54,7 +51,7 @@ class CustomerSaveAfterObserver implements ObserverInterface
 
     private function getEventIdentifier(Customer $customer): string
     {
-        if ($this->newCustomersRegistry->isCustomerNew($customer)) {
+        if ($customer->getCreatedAt() === $customer->getUpdatedAt()) {
             return 'customer.created';
         }
         return 'customer.updated';
