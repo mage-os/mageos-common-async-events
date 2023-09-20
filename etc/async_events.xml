@@ -1,8 +1,17 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:MageOS_AsyncEvents:etc/async_events.xsd">
+    <async_event name="customer.created">
+        <service class="MageOS\CommonAsyncEvents\Model\AsyncCustomerManagement" method="getById"/>
+    </async_event>
     <async_event name="customer.updated">
         <service class="MageOS\CommonAsyncEvents\Model\AsyncCustomerManagement" method="getById"/>
+    </async_event>
+    <async_event name="customer.address.created">
+        <service class="Magento\Customer\Api\AddressRepositoryInterface" method="getById"/>
+    </async_event>
+    <async_event name="customer.address.updated">
+        <service class="Magento\Customer\Api\AddressRepositoryInterface" method="getById"/>
     </async_event>
     <async_event name="sales.order.created">
         <service class="Magento\Sales\Api\OrderRepositoryInterface" method="get"/>
