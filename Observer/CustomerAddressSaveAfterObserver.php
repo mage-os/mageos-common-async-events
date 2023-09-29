@@ -9,7 +9,6 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Framework\Serialize\Serializer\Json;
 use MageOS\AsyncEvents\Helper\QueueMetadataInterface;
-use MageOS\CommonAsyncEvents\Model\NewCustomersRegistry;
 use MageOS\CommonAsyncEvents\Model\ProcessedCustomerAddressesRegistry;
 
 class CustomerAddressSaveAfterObserver implements ObserverInterface
