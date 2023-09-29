@@ -5,22 +5,14 @@ namespace MageOS\CommonAsyncEvents\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\MessageQueue\PublisherInterface;
-use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Sales\Model\Order\Invoice;
-use MageOS\AsyncEvents\Helper\QueueMetadataInterface;
+use MageOS\CommonAsyncEvents\Service\PublishingService;
 
 class SalesOrderInvoiceSaveAfterObserver implements ObserverInterface
 {
-    private Json $json;
-    private PublisherInterface $publisher;
-
     public function __construct(
-        Json $json,
-        PublisherInterface $publisher
+        private readonly PublishingService $publisherService
     ) {
-        $this->json = $json;
-        $this->publisher = $publisher;
     }
 
     /**
@@ -33,22 +25,16 @@ class SalesOrderInvoiceSaveAfterObserver implements ObserverInterface
         $arguments = ['id' => $invoice->getIncrementId()];
 
         if ($this->isInvoiceCreated($invoice)) {
-            $this->publisher->publish(
-                QueueMetadataInterface::EVENT_QUEUE,
-                [
-                    'sales.invoice.created',
-                    $this->json->serialize($arguments)
-                ]
+            $this->publisherService->publish(
+                'sales.invoice.created',
+                $arguments
             );
         }
 
         if ($this->isInvoicePaid($invoice)) {
-            $this->publisher->publish(
-                QueueMetadataInterface::EVENT_QUEUE,
-                [
-                    'sales.invoice.paid',
-                    $this->json->serialize($arguments)
-                ]
+            $this->publisherService->publish(
+                'sales.invoice.paid',
+                $arguments
             );
         }
     }
