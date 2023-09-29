@@ -32,6 +32,7 @@ You can now use the following events without having to implement them yourself.
 | sales.order.updated      | When the state of an existing order is changed ||
 | sales.shipment.created   | When a new shipment is created                 |                |
 | sales.invoice.created    | When a new invoice is created                  |                 |
+| sales.invoice.paid       | When an invoice is paid                        |                 |
 | sales.creditmemo.created | When a new creditmemo is created               |              |
 
 You can use these events by
