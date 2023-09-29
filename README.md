@@ -32,6 +32,9 @@ You can now use the following events without having to implement them yourself.
 | sales.order.updated      | When the state of an existing order is changed ||
 | sales.order.paid         | When an order is fully paid                    ||
 | sales.order.shipped      | When an order is fully shipped                 ||
+| sales.order.holded       | When an order is set "on hold"                   ||
+| sales.order.unholded     | When an order is release from "on hold"         ||
+| sales.order.cancelled    | When an order is cancelled                     ||
 | sales.shipment.created   | When a new shipment is created                 |                |
 | sales.invoice.created    | When a new invoice is created                  |                 |
 | sales.invoice.paid       | When an invoice is paid                        |                 |

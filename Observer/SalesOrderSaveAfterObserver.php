@@ -42,6 +42,24 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
                 $arguments
             );
         }
+        if ($this->isOrderHolded($order)) {
+            $this->publisherService->publish(
+                'sales.order.holded',
+                $arguments
+            );
+        }
+        if ($this->isOrderUnholded($order)) {
+            $this->publisherService->publish(
+                'sales.order.unholded',
+                $arguments
+            );
+        }
+        if ($this->isOrderCancelled($order)) {
+            $this->publisherService->publish(
+                'sales.order.cancelled',
+                $arguments
+            );
+        }
     }
 
     private function isOrderNew(Order $order): bool
@@ -57,5 +75,20 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
     private function isOrderPaid(Order $order): bool
     {
         return $order->getBaseTotalDue() == 0 && $order->getOrigData('base_total_due') != 0;
+    }
+
+    private function isOrderHolded(Order $order): bool
+    {
+        return ($order->getState() == 'holded') && $order->getOrigData('state') != 'holded';
+    }
+
+    private function isOrderUnholded(Order $order): bool
+    {
+        return ($order->getState() != 'holded') && $order->getOrigData('state') == 'holded';
+    }
+
+    private function isOrderCancelled(Order $order): bool
+    {
+        return ($order->isCanceled()) && $order->getOrigData('state') != 'cancelled';
     }
 }
