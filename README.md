@@ -29,7 +29,7 @@ You can now use the following events without having to implement them yourself.
 | customer.created         | Whenever a customer is created                        |                  |
 | customer.updated         | Whenever a customer is saved, except it's new         |                  |
 | customer.address.created | Whenever a customer address is created                |                  |
-| customer.address.pdated  | Whenever a customer address is saved, except it's new |                  |
+| customer.address.updated | Whenever a customer address is saved, except it's new |                  |
 | sales.order.created      | When a new order is created                           |                  |
 | sales.order.updated      | When the state of an existing order is changed        ||
 | sales.shipment.created   | When a new shipment is created                        |                |
