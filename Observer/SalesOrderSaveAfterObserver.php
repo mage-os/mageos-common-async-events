@@ -24,24 +24,38 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
         $order = $observer->getEvent()->getData('order');
         $arguments = ['id' => $order->getIncrementId()];
 
-        $eventIdentifier = $this->getEventIdentifier($order);
-        if ($eventIdentifier === null) {
-            return;
+        if ($this->isOrderNew($order)) {
+            $this->publisherService->publish(
+                'sales.order.created',
+                $arguments
+            );
         }
-        $this->publisherService->publish(
-            $eventIdentifier,
-            $arguments
-        );
+        if ($this->isOrderStatusUpdated($order)) {
+            $this->publisherService->publish(
+                'sales.order.updated',
+                $arguments
+            );
+        }
+        if ($this->isOrderPaid($order)) {
+            $this->publisherService->publish(
+                'sales.order.paid',
+                $arguments
+            );
+        }
     }
 
-    private function getEventIdentifier(Order $order): ?string
+    private function isOrderNew(Order $order): bool
     {
-        if (empty($order->getOrigData('entity_id'))) {
-            return 'sales.order.created';
-        }
-        if ($order->getState() !== $order->getOrigData('state')) {
-            return 'sales.order.updated';
-        }
-        return null;
+        return empty($order->getOrigData('entity_id'));
+    }
+
+    private function isOrderStatusUpdated(Order $order): bool
+    {
+        return ($order->getState() !== $order->getOrigData('state')) && $order->getOrigData('state');
+    }
+
+    private function isOrderPaid(Order $order): bool
+    {
+        return $order->getBaseTotalDue() == 0 && $order->getOrigData('base_total_due') != 0;
     }
 }

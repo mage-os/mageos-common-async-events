@@ -19,6 +19,12 @@
     <async_event name="sales.order.updated">
         <service class="Magento\Sales\Api\OrderRepositoryInterface" method="get"/>
     </async_event>
+    <async_event name="sales.order.paid">
+        <service class="Magento\Sales\Api\OrderRepositoryInterface" method="get"/>
+    </async_event>
+    <async_event name="sales.order.shipped">
+        <service class="Magento\Sales\Api\OrderRepositoryInterface" method="get"/>
+    </async_event>
     <async_event name="sales.shipment.created">
         <service class="Magento\Sales\Api\ShipmentRepositoryInterface" method="get"/>
     </async_event>

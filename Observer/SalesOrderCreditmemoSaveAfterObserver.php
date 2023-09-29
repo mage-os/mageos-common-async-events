@@ -22,23 +22,16 @@ class SalesOrderCreditmemoSaveAfterObserver implements ObserverInterface
     {
         /** @var Creditmemo $creditmemo */
         $creditmemo = $observer->getEvent()->getData('creditmemo');
-        $arguments = ['id' => $creditmemo->getIncrementId()];
-
-        $eventIdentifier = $this->getEventIdentifier($creditmemo);
-        if ($eventIdentifier === null) {
-            return;
+        if ($this->isCreditmemoCreated($creditmemo)) {
+            $this->publisherService->publish(
+                'sales.creditmemo.created',
+                ['id' => $creditmemo->getIncrementId()]
+            );
         }
-        $this->publisherService->publish(
-            $eventIdentifier,
-            $arguments
-        );
     }
 
-    private function getEventIdentifier(Creditmemo $order): ?string
+    private function isCreditmemoCreated(Creditmemo $creditmemo): bool
     {
-        if (empty($order->getOrigData('entity_id'))) {
-            return 'sales.creditmemo.created';
-        }
-        return null;
+        return empty($creditmemo->getOrigData('entity_id'));
     }
 }

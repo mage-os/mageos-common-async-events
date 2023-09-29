@@ -30,6 +30,8 @@ You can now use the following events without having to implement them yourself.
 | customer.updated         | Whenever a customer is saved, except it's new  |                  |
 | sales.order.created      | When a new order is created                    |                  |
 | sales.order.updated      | When the state of an existing order is changed ||
+| sales.order.paid         | When an order is fully paid                    ||
+| sales.order.shipped      | When an order is fully shipped                 ||
 | sales.shipment.created   | When a new shipment is created                 |                |
 | sales.invoice.created    | When a new invoice is created                  |                 |
 | sales.invoice.paid       | When an invoice is paid                        |                 |

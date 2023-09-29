@@ -22,23 +22,27 @@ class SalesOrderShipmentSaveAfterObserver implements ObserverInterface
     {
         /** @var Shipment $shipment */
         $shipment = $observer->getEvent()->getData('shipment');
-        $arguments = ['id' => $shipment->getIncrementId()];
-
-        $eventIdentifier = $this->getEventIdentifier($shipment);
-        if ($eventIdentifier === null) {
-            return;
+        if ($this->isShipmentNew($shipment)) {
+            $this->publisherService->publish(
+                'sales.shipment.created',
+                ['id' => $shipment->getIncrementId()]
+            );
         }
-        $this->publisherService->publish(
-            $eventIdentifier,
-            $arguments
-        );
+        if ($this->isOrderFullyShipped($shipment)) {
+            $this->publisherService->publish(
+                'sales.order.shipped',
+                ['id' => $shipment->getOrderId()]
+            );
+        }
     }
 
-    private function getEventIdentifier(Shipment $order): ?string
+    private function isShipmentNew(Shipment $shipment): bool
     {
-        if (empty($order->getOrigData('entity_id'))) {
-            return 'sales.shipment.created';
-        }
-        return null;
+        return empty($shipment->getOrigData('entity_id'));
+    }
+
+    private function isOrderFullyShipped(Shipment $shipment): bool
+    {
+        return $this->isShipmentNew($shipment) && !$shipment->getOrder()->canShip();
     }
 }
