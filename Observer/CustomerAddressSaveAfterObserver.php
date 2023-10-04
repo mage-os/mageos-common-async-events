@@ -6,16 +6,13 @@ namespace MageOS\CommonAsyncEvents\Observer;
 use Magento\Customer\Model\Address;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\MessageQueue\PublisherInterface;
-use Magento\Framework\Serialize\Serializer\Json;
-use MageOS\AsyncEvents\Helper\QueueMetadataInterface;
 use MageOS\CommonAsyncEvents\Model\ProcessedCustomerAddressesRegistry;
+use MageOS\CommonAsyncEvents\Service\PublishingService;
 
 class CustomerAddressSaveAfterObserver implements ObserverInterface
 {
     public function __construct(
-        private readonly Json $json,
-        private readonly PublisherInterface $publisher,
+        private readonly PublishingService $publishingService,
         private readonly ProcessedCustomerAddressesRegistry $processedCustomerAddressesRegistry
     ) {
     }
@@ -35,11 +32,10 @@ class CustomerAddressSaveAfterObserver implements ObserverInterface
             return;
         }
         $arguments = ['addressId' => $customerAddress->getId()];
-        $data = [$eventIdentifier, $this->json->serialize($arguments)];
 
-        $this->publisher->publish(
-            QueueMetadataInterface::EVENT_QUEUE,
-            $data
+        $this->publishingService->publish(
+            $eventIdentifier,
+            $arguments
         );
 
         $this->processedCustomerAddressesRegistry->setCustomerAddressProcessed($customerAddress);
