@@ -3,7 +3,7 @@
   "description": "Send REST requests to external endpoints asynchronously. This module implements the most common events like order creation and customer change.",
   "type": "magento2-module",
   "require": {
-    "php":  ">=7.4",
+    "php":  ">=8.1",
     "magento/framework": "*",
     "mage-os/mageos-async-events": "*"
   },
