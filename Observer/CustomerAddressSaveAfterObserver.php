@@ -9,26 +9,15 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Framework\Serialize\Serializer\Json;
 use MageOS\AsyncEvents\Helper\QueueMetadataInterface;
-use MageOS\CommonAsyncEvents\Model\NewCustomersRegistry;
 use MageOS\CommonAsyncEvents\Model\ProcessedCustomerAddressesRegistry;
 
 class CustomerAddressSaveAfterObserver implements ObserverInterface
 {
-    private Json $json;
-    private PublisherInterface $publisher;
-    private NewCustomersRegistry $newCustomersRegistry;
-    private ProcessedCustomerAddressesRegistry $processedCustomerAddressesRegistry;
-
     public function __construct(
-        Json $json,
-        PublisherInterface $publisher,
-        NewCustomersRegistry $newCustomersRegistry,
-        ProcessedCustomerAddressesRegistry $processedCustomerAddressesRegistry
+        private readonly Json $json,
+        private readonly PublisherInterface $publisher,
+        private readonly ProcessedCustomerAddressesRegistry $processedCustomerAddressesRegistry
     ) {
-        $this->json = $json;
-        $this->publisher = $publisher;
-        $this->newCustomersRegistry = $newCustomersRegistry;
-        $this->processedCustomerAddressesRegistry = $processedCustomerAddressesRegistry;
     }
 
     /**
@@ -41,8 +30,12 @@ class CustomerAddressSaveAfterObserver implements ObserverInterface
         if ($this->processedCustomerAddressesRegistry->isCustomerProcessed($customerAddress)) {
             return;
         }
+        $eventIdentifier = $this->getEventIdentifier($customerAddress);
+        if ($eventIdentifier === null) {
+            return;
+        }
         $arguments = ['addressId' => $customerAddress->getId()];
-        $data = [$this->getEventIdentifier($customerAddress), $this->json->serialize($arguments)];
+        $data = [$eventIdentifier, $this->json->serialize($arguments)];
 
         $this->publisher->publish(
             QueueMetadataInterface::EVENT_QUEUE,
@@ -52,11 +45,27 @@ class CustomerAddressSaveAfterObserver implements ObserverInterface
         $this->processedCustomerAddressesRegistry->setCustomerAddressProcessed($customerAddress);
     }
 
-    private function getEventIdentifier(Address $customerAddress): string
+    private function getEventIdentifier(Address $customerAddress): ?string
     {
-        if (!$customerAddress->getOrigData('address_id')) {
+        if (!$customerAddress->getOrigData('entity_id')) {
             return 'customer.address.created';
         }
-        return 'customer.address.updated';
+        if ($this->hasAddressChanged($customerAddress)) {
+            return 'customer.address.updated';
+        }
+        return null;
+    }
+
+    private function hasAddressChanged(Address $customerAddress): bool
+    {
+        foreach ($customerAddress->getOrigData() as $key => $origValue) {
+            if (in_array($key, ['updated_at'])) {
+                continue;
+            }
+            if ($customerAddress->getData($key) != $origValue) {
+                return true;
+            }
+        }
+        return false;
     }
 }

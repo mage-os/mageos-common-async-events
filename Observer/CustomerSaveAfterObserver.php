@@ -9,22 +9,18 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\MessageQueue\PublisherInterface;
 use Magento\Framework\Serialize\Serializer\Json;
 use MageOS\AsyncEvents\Helper\QueueMetadataInterface;
+use MageOS\CommonAsyncEvents\Model\ChangedCustomerDataRegistry;
 use MageOS\CommonAsyncEvents\Model\ProcessedCustomersRegistry;
 
 class CustomerSaveAfterObserver implements ObserverInterface
 {
-    private Json $json;
-    private PublisherInterface $publisher;
-    private ProcessedCustomersRegistry $processedCustomersRegistry;
 
     public function __construct(
-        Json $json,
-        PublisherInterface $publisher,
-        ProcessedCustomersRegistry $processedCustomersRegistry
+        private readonly Json $json,
+        private readonly PublisherInterface $publisher,
+        private readonly ProcessedCustomersRegistry $processedCustomersRegistry,
+        private readonly ChangedCustomerDataRegistry $changedCustomerDataRegistry
     ) {
-        $this->json = $json;
-        $this->publisher = $publisher;
-        $this->processedCustomersRegistry = $processedCustomersRegistry;
     }
 
     /**
@@ -34,11 +30,16 @@ class CustomerSaveAfterObserver implements ObserverInterface
     {
         /** @var Customer $customer */
         $customer = $observer->getEvent()->getData('customer');
+
         if ($this->processedCustomersRegistry->isCustomerProcessed($customer)) {
             return;
         }
+        $eventIdentifier = $this->getEventIdentifier($customer);
+        if ($eventIdentifier === null) {
+            return;
+        }
         $arguments = ['customerId' => $customer->getId()];
-        $data = [$this->getEventIdentifier($customer), $this->json->serialize($arguments)];
+        $data = [$eventIdentifier, $this->json->serialize($arguments)];
 
         $this->publisher->publish(
             QueueMetadataInterface::EVENT_QUEUE,
@@ -48,11 +49,14 @@ class CustomerSaveAfterObserver implements ObserverInterface
         $this->processedCustomersRegistry->setCustomerProcessed($customer);
     }
 
-    private function getEventIdentifier(Customer $customer): string
+    private function getEventIdentifier(Customer $customer): ?string
     {
         if ($customer->getCreatedAt() === $customer->getUpdatedAt()) {
             return 'customer.created';
         }
-        return 'customer.updated';
+        if ($this->changedCustomerDataRegistry->isCustomerDataChanged($customer)) {
+            return 'customer.updated';
+        }
+        return null;
     }
 }
