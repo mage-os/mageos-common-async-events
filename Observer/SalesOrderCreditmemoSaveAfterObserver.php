@@ -5,22 +5,14 @@ namespace MageOS\CommonAsyncEvents\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\MessageQueue\PublisherInterface;
-use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Sales\Model\Order\Creditmemo;
-use MageOS\AsyncEvents\Helper\QueueMetadataInterface;
+use MageOS\CommonAsyncEvents\Service\PublishingService;
 
 class SalesOrderCreditmemoSaveAfterObserver implements ObserverInterface
 {
-    private Json $json;
-    private PublisherInterface $publisher;
-
     public function __construct(
-        Json $json,
-        PublisherInterface $publisher
+        private readonly PublishingService $publisherService
     ) {
-        $this->json = $json;
-        $this->publisher = $publisher;
     }
 
     /**
@@ -30,25 +22,16 @@ class SalesOrderCreditmemoSaveAfterObserver implements ObserverInterface
     {
         /** @var Creditmemo $creditmemo */
         $creditmemo = $observer->getEvent()->getData('creditmemo');
-        $arguments = ['id' => $creditmemo->getIncrementId()];
-
-        $eventIdentifier = $this->getEventIdentifier($creditmemo);
-        if ($eventIdentifier === null) {
-            return;
+        if ($this->isCreditmemoCreated($creditmemo)) {
+            $this->publisherService->publish(
+                'sales.creditmemo.created',
+                ['id' => $creditmemo->getIncrementId()]
+            );
         }
-        $data = [$eventIdentifier, $this->json->serialize($arguments)];
-
-        $this->publisher->publish(
-            QueueMetadataInterface::EVENT_QUEUE,
-            $data
-        );
     }
 
-    private function getEventIdentifier(Creditmemo $order): ?string
+    private function isCreditmemoCreated(Creditmemo $creditmemo): bool
     {
-        if (empty($order->getOrigData('entity_id'))) {
-            return 'sales.creditmemo.created';
-        }
-        return null;
+        return empty($creditmemo->getOrigData('entity_id'));
     }
 }

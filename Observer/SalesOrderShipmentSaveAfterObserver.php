@@ -5,22 +5,14 @@ namespace MageOS\CommonAsyncEvents\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\MessageQueue\PublisherInterface;
-use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Sales\Model\Order\Shipment;
-use MageOS\AsyncEvents\Helper\QueueMetadataInterface;
+use MageOS\CommonAsyncEvents\Service\PublishingService;
 
 class SalesOrderShipmentSaveAfterObserver implements ObserverInterface
 {
-    private Json $json;
-    private PublisherInterface $publisher;
-
     public function __construct(
-        Json $json,
-        PublisherInterface $publisher
+        private readonly PublishingService $publisherService
     ) {
-        $this->json = $json;
-        $this->publisher = $publisher;
     }
 
     /**
@@ -30,25 +22,27 @@ class SalesOrderShipmentSaveAfterObserver implements ObserverInterface
     {
         /** @var Shipment $shipment */
         $shipment = $observer->getEvent()->getData('shipment');
-        $arguments = ['id' => $shipment->getIncrementId()];
-
-        $eventIdentifier = $this->getEventIdentifier($shipment);
-        if ($eventIdentifier === null) {
-            return;
+        if ($this->isShipmentNew($shipment)) {
+            $this->publisherService->publish(
+                'sales.shipment.created',
+                ['id' => $shipment->getIncrementId()]
+            );
         }
-        $data = [$eventIdentifier, $this->json->serialize($arguments)];
-
-        $this->publisher->publish(
-            QueueMetadataInterface::EVENT_QUEUE,
-            $data
-        );
+        if ($this->isOrderFullyShipped($shipment)) {
+            $this->publisherService->publish(
+                'sales.order.shipped',
+                ['id' => $shipment->getOrderId()]
+            );
+        }
     }
 
-    private function getEventIdentifier(Shipment $order): ?string
+    private function isShipmentNew(Shipment $shipment): bool
     {
-        if (empty($order->getOrigData('entity_id'))) {
-            return 'sales.shipment.created';
-        }
-        return null;
+        return empty($shipment->getOrigData('entity_id'));
+    }
+
+    private function isOrderFullyShipped(Shipment $shipment): bool
+    {
+        return $this->isShipmentNew($shipment) && !$shipment->getOrder()->canShip();
     }
 }

@@ -5,22 +5,14 @@ namespace MageOS\CommonAsyncEvents\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\MessageQueue\PublisherInterface;
-use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Sales\Model\Order\Invoice;
-use MageOS\AsyncEvents\Helper\QueueMetadataInterface;
+use MageOS\CommonAsyncEvents\Service\PublishingService;
 
 class SalesOrderInvoiceSaveAfterObserver implements ObserverInterface
 {
-    private Json $json;
-    private PublisherInterface $publisher;
-
     public function __construct(
-        Json $json,
-        PublisherInterface $publisher
+        private readonly PublishingService $publisherService
     ) {
-        $this->json = $json;
-        $this->publisher = $publisher;
     }
 
     /**
@@ -32,23 +24,29 @@ class SalesOrderInvoiceSaveAfterObserver implements ObserverInterface
         $invoice = $observer->getEvent()->getData('invoice');
         $arguments = ['id' => $invoice->getIncrementId()];
 
-        $eventIdentifier = $this->getEventIdentifier($invoice);
-        if ($eventIdentifier === null) {
-            return;
+        if ($this->isInvoiceCreated($invoice)) {
+            $this->publisherService->publish(
+                'sales.invoice.created',
+                $arguments
+            );
         }
-        $data = [$eventIdentifier, $this->json->serialize($arguments)];
 
-        $this->publisher->publish(
-            QueueMetadataInterface::EVENT_QUEUE,
-            $data
-        );
+        if ($this->isInvoicePaid($invoice)) {
+            $this->publisherService->publish(
+                'sales.invoice.paid',
+                $arguments
+            );
+        }
     }
 
-    private function getEventIdentifier(Invoice $order): ?string
+    private function isInvoiceCreated(Invoice $invoice): bool
     {
-        if (empty($order->getOrigData('entity_id'))) {
-            return 'sales.invoice.created';
-        }
-        return null;
+        return empty($invoice->getOrigData('entity_id'));
+    }
+
+    private function isInvoicePaid(Invoice $invoice): bool
+    {
+        return $invoice->getState() === Invoice::STATE_PAID
+            && $invoice->getOrigData('state') !== Invoice::STATE_PAID;
     }
 }

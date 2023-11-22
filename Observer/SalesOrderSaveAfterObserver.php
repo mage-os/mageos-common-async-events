@@ -5,22 +5,14 @@ namespace MageOS\CommonAsyncEvents\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\MessageQueue\PublisherInterface;
-use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Sales\Model\Order;
-use MageOS\AsyncEvents\Helper\QueueMetadataInterface;
+use MageOS\CommonAsyncEvents\Service\PublishingService;
 
 class SalesOrderSaveAfterObserver implements ObserverInterface
 {
-    private Json $json;
-    private PublisherInterface $publisher;
-
     public function __construct(
-        Json $json,
-        PublisherInterface $publisher
+        private readonly PublishingService $publisherService
     ) {
-        $this->json = $json;
-        $this->publisher = $publisher;
     }
 
     /**
@@ -32,26 +24,71 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
         $order = $observer->getEvent()->getData('order');
         $arguments = ['id' => $order->getIncrementId()];
 
-        $eventIdentifier = $this->getEventIdentifier($order);
-        if ($eventIdentifier === null) {
-            return;
+        if ($this->isOrderNew($order)) {
+            $this->publisherService->publish(
+                'sales.order.created',
+                $arguments
+            );
         }
-        $data = [$eventIdentifier, $this->json->serialize($arguments)];
-
-        $this->publisher->publish(
-            QueueMetadataInterface::EVENT_QUEUE,
-            $data
-        );
+        if ($this->isOrderStatusUpdated($order)) {
+            $this->publisherService->publish(
+                'sales.order.updated',
+                $arguments
+            );
+        }
+        if ($this->isOrderPaid($order)) {
+            $this->publisherService->publish(
+                'sales.order.paid',
+                $arguments
+            );
+        }
+        if ($this->isOrderHolded($order)) {
+            $this->publisherService->publish(
+                'sales.order.holded',
+                $arguments
+            );
+        }
+        if ($this->isOrderUnholded($order)) {
+            $this->publisherService->publish(
+                'sales.order.unholded',
+                $arguments
+            );
+        }
+        if ($this->isOrderCancelled($order)) {
+            $this->publisherService->publish(
+                'sales.order.cancelled',
+                $arguments
+            );
+        }
     }
 
-    private function getEventIdentifier(Order $order): ?string
+    private function isOrderNew(Order $order): bool
     {
-        if (empty($order->getOrigData('entity_id'))) {
-            return 'sales.order.created';
-        }
-        if ($order->getState() !== $order->getOrigData('state')) {
-            return 'sales.order.updated';
-        }
-        return null;
+        return empty($order->getOrigData('entity_id'));
+    }
+
+    private function isOrderStatusUpdated(Order $order): bool
+    {
+        return ($order->getState() !== $order->getOrigData('state')) && $order->getOrigData('state');
+    }
+
+    private function isOrderPaid(Order $order): bool
+    {
+        return $order->getBaseTotalDue() == 0 && $order->getOrigData('base_total_due') != 0;
+    }
+
+    private function isOrderHolded(Order $order): bool
+    {
+        return ($order->getState() == 'holded') && $order->getOrigData('state') != 'holded';
+    }
+
+    private function isOrderUnholded(Order $order): bool
+    {
+        return ($order->getState() != 'holded') && $order->getOrigData('state') == 'holded';
+    }
+
+    private function isOrderCancelled(Order $order): bool
+    {
+        return ($order->isCanceled()) && $order->getOrigData('state') != 'cancelled';
     }
 }
