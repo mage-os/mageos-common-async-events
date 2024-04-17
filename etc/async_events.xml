@@ -8,10 +8,10 @@
         <service class="MageOS\CommonAsyncEvents\Model\AsyncCustomerManagement" method="getById"/>
     </async_event>
     <async_event name="customer.address.created">
-        <service class="Magento\Customer\Api\AddressRepositoryInterface" method="getById"/>
+        <service class="MageOS\CommonAsyncEvents\Model\AsyncCustomerAddressManagement" method="getById"/>
     </async_event>
     <async_event name="customer.address.updated">
-        <service class="Magento\Customer\Api\AddressRepositoryInterface" method="getById"/>
+        <service class="MageOS\CommonAsyncEvents\Model\AsyncCustomerAddressManagement" method="getById"/>
     </async_event>
     <async_event name="sales.order.created">
         <service class="Magento\Sales\Api\OrderRepositoryInterface" method="get"/>
