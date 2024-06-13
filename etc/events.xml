@@ -9,6 +9,10 @@
         <observer name="mageos_common_async_events_customer_save_before"
                   instance="MageOS\CommonAsyncEvents\Observer\CustomerSaveBeforeObserver"/>
     </event>
+    <event name="customer_login">
+        <observer name="mageos_common_async_events_customer_login"
+                  instance="MageOS\CommonAsyncEvents\Observer\CustomerLoginObserver"/>
+    </event>
     <event name="customer_address_save_after">
         <observer name="mageos_common_async_events_customer_address_save_after"
                   instance="MageOS\CommonAsyncEvents\Observer\CustomerAddressSaveAfterObserver"/>

@@ -28,6 +28,7 @@ You can now use the following events without having to implement them yourself.
 |--------------------------|------------------------------------------------|-------------------------|
 | customer.created         | Whenever a customer is created                 |                  |
 | customer.updated         | Whenever a customer is saved, except it's new  |                  |
+| customer.login | Whenever a customer logs in successfully | |
 | customer.address.created | Whenever a customer address is created                |                  |
 | customer.address.updated | Whenever a customer address is saved, except it's new |                  |
 | sales.order.created      | When a new order is created                    |                  |
@@ -46,3 +47,11 @@ You can use these events by
 
 * [creating a new subscription via Mage-OS REST API](https://github.com/mage-os/mageos-async-events/#create-subscription)
 * [creating a new subscription with the Mage-OS Async Events Admin UI module](https://github.com/mage-os/mageos-async-events-admin-ui)
+
+
+## 3rd Party Events
+
+| Event identifier | Description | Module |
+|-|-|-|
+| customer.login_failed | Whenever a customer fails to log in | `zero1/async-event-customer-login-failed` |
+| customer.create_failed | Whenever a customer fails to sign up for an account in | `zero1/async-event-customer-create-failed` |
