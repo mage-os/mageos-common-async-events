@@ -25,7 +25,7 @@ class SalesOrderShipmentSaveAfterObserver implements ObserverInterface
         if ($this->isShipmentNew($shipment)) {
             $this->publisherService->publish(
                 'sales.shipment.created',
-                ['id' => $shipment->getIncrementId()]
+                ['id' => $shipment->getId()]
             );
         }
         if ($this->isOrderFullyShipped($shipment)) {

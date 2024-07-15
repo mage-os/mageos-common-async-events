@@ -22,7 +22,7 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
     {
         /** @var Order $order */
         $order = $observer->getEvent()->getData('order');
-        $arguments = ['id' => $order->getIncrementId()];
+        $arguments = ['id' => $order->getId()];
 
         if ($this->isOrderNew($order)) {
             $this->publisherService->publish(
