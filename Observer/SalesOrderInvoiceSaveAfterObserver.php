@@ -22,7 +22,7 @@ class SalesOrderInvoiceSaveAfterObserver implements ObserverInterface
     {
         /** @var Invoice $invoice */
         $invoice = $observer->getEvent()->getData('invoice');
-        $arguments = ['id' => $invoice->getIncrementId()];
+        $arguments = ['id' => $invoice->getId()];
 
         if ($this->isInvoiceCreated($invoice)) {
             $this->publisherService->publish(
