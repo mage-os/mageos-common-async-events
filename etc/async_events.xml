@@ -7,6 +7,9 @@
     <async_event name="customer.updated">
         <service class="MageOS\CommonAsyncEvents\Model\AsyncCustomerManagement" method="getById"/>
     </async_event>
+    <async_event name="customer.login">
+        <service class="MageOS\CommonAsyncEvents\Model\AsyncCustomerManagement" method="getById"/>
+    </async_event>
     <async_event name="customer.address.created">
         <service class="MageOS\CommonAsyncEvents\Model\AsyncCustomerAddressManagement" method="getById"/>
     </async_event>
