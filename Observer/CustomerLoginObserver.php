@@ -17,7 +17,7 @@ class CustomerLoginObserver implements ObserverInterface
     }
 
     /**
-     * @see @event customer_save_after
+     * @see @event customer_login
      */
     public function execute(Observer $observer): void
     {
