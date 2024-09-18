@@ -17,19 +17,19 @@
         <observer name="mageos_common_async_events_customer_address_save_after"
                   instance="MageOS\CommonAsyncEvents\Observer\CustomerAddressSaveAfterObserver"/>
     </event>
-    <event name="sales_order_save_after">
+    <event name="sales_order_save_commit_after">
         <observer name="mageos_common_async_events_sales_order_save_after"
                   instance="MageOS\CommonAsyncEvents\Observer\SalesOrderSaveAfterObserver"/>
     </event>
-    <event name="sales_order_shipment_save_after">
+    <event name="sales_order_shipment_save_commit_after">
         <observer name="mageos_common_async_events_sales_order_shipment_save_after"
                   instance="MageOS\CommonAsyncEvents\Observer\SalesOrderShipmentSaveAfterObserver"/>
     </event>
-    <event name="sales_order_invoice_save_after">
+    <event name="sales_order_invoice_save_commit_after">
         <observer name="mageos_common_async_events_sales_order_invoice_save_after"
                   instance="MageOS\CommonAsyncEvents\Observer\SalesOrderInvoiceSaveAfterObserver"/>
     </event>
-    <event name="sales_order_creditmemo_save_after">
+    <event name="sales_order_creditmemo_save_commit_after">
         <observer name="mageos_common_async_events_sales_order_creditmemo_save_after"
                   instance="MageOS\CommonAsyncEvents\Observer\SalesOrderCreditmemoSaveAfterObserver"/>
     </event>
