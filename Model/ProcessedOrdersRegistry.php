@@ -12,9 +12,7 @@ use Magento\Sales\Api\Data\OrderInterface;
  */
 class ProcessedOrdersRegistry
 {
-    const FIELD_NAME_IDENTIFIER = 'entity_id';
-
-    /** @var array|string[] */
+    /** @var array|bool[] */
     private array $processedOrderIdentifiers = [];
 
     public function setOrderProcessed(OrderInterface $order): void
@@ -24,13 +22,7 @@ class ProcessedOrdersRegistry
 
     public function isOrderProcessed(OrderInterface $order): bool
     {
-        $identifier = $this->getIdentifier($order);
-
-        if (isset($this->processedOrderIdentifiers[$identifier])) {
-            unset ($this->processedOrderIdentifiers[$identifier]);
-            return true;
-        }
-        return false;
+        return isset($this->processedOrderIdentifiers[$this->getIdentifier($order)]);
     }
 
     private function getIdentifier(OrderInterface $order)
