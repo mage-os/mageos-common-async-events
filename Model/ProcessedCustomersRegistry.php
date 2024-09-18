@@ -12,7 +12,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
  */
 class ProcessedCustomersRegistry
 {
-    const FIELD_NAME_IDENTIFIER = 'email';
+    private const FIELD_NAME_IDENTIFIER = 'email';
 
     /** @var array|string[] */
     private array $processedCustomerIdentifiers = [];
@@ -27,7 +27,6 @@ class ProcessedCustomersRegistry
         $identifier = $this->getIdentifier($customer);
 
         if (isset($this->processedCustomerIdentifiers[$identifier])) {
-            unset ($this->processedCustomerIdentifiers[$identifier]);
             return true;
         }
         return false;

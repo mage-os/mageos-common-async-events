@@ -6,12 +6,14 @@ namespace MageOS\CommonAsyncEvents\Observer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Sales\Model\Order;
+use MageOS\CommonAsyncEvents\Model\ProcessedOrdersRegistry;
 use MageOS\CommonAsyncEvents\Service\PublishingService;
 
 class SalesOrderSaveAfterObserver implements ObserverInterface
 {
     public function __construct(
-        private readonly PublishingService $publisherService
+        private readonly PublishingService $publisherService,
+        private readonly ProcessedOrdersRegistry $processedOrdersRegistry
     ) {
     }
 
@@ -22,6 +24,11 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
     {
         /** @var Order $order */
         $order = $observer->getEvent()->getData('order');
+
+        if ($this->processedOrdersRegistry->isOrderProcessed($order)) {
+            return;
+        }
+
         $arguments = ['id' => $order->getId()];
 
         if ($this->isOrderNew($order)) {
@@ -60,6 +67,8 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
                 $arguments
             );
         }
+
+        $this->processedOrdersRegistry->setOrderProcessed($order);
     }
 
     private function isOrderNew(Order $order): bool
