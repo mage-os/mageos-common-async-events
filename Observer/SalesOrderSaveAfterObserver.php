@@ -16,7 +16,7 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
     }
 
     /**
-     * @see @event sales_order_save_after
+     * @see @event sales_order_save_commit_after
      */
     public function execute(Observer $observer): void
     {
