@@ -53,7 +53,7 @@ You can use these events by
 
 ## 3rd Party Events
 
-| Event identifier | Description | Module                                                                                                                           |
-|-|-|----------------------------------------------------------------------------------------------------------------------------------|
-| customer.login_failed | Whenever a customer fails to log in | [`zero1/async-event-customer-login-failed`](https://github.com/zero1limited/magento2-module-async-event-customer-login-failed)   |
+| Event identifier       | Description                                         | Module                                                                                                                           |
+|------------------------|-----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| customer.login_failed  | Whenever a customer fails to log in                 | [`zero1/async-event-customer-login-failed`](https://github.com/zero1limited/magento2-module-async-event-customer-login-failed)   |
 | customer.create_failed | Whenever a customer fails to sign up for an account | [`zero1/async-event-customer-create-failed`](https://github.com/zero1limited/magento2-module-async-event-customer-create-failed) |
