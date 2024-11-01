@@ -24,24 +24,26 @@ bin/magento setup:upgrade
 
 You can now use the following events without having to implement them yourself.
 
-| Event identifier         | Description                                    |Remarks                  |
-|--------------------------|------------------------------------------------|-------------------------|
-| customer.created         | Whenever a customer is created                 |                  |
-| customer.updated         | Whenever a customer is saved, except it's new  |                  |
-| customer.login | Whenever a customer logs in successfully | |
+| Event identifier         | Description                                           |Remarks                  |
+|--------------------------|-------------------------------------------------------|-------------------------|
+| customer.created         | Whenever a customer is created                        |                  |
+| customer.updated         | Whenever a customer is saved, except it's new         |                  |
+| customer.login           | Whenever a customer logs in successfully              | |
 | customer.address.created | Whenever a customer address is created                |                  |
 | customer.address.updated | Whenever a customer address is saved, except it's new |                  |
-| sales.order.created      | When a new order is created                    |                  |
-| sales.order.updated      | When the state of an existing order is changed ||
-| sales.order.paid         | When an order is fully paid                    ||
-| sales.order.shipped      | When an order is fully shipped                 ||
-| sales.order.holded       | When an order is set "on hold"                 ||
-| sales.order.unholded     | When an order is released from "on hold"       ||
-| sales.order.cancelled    | When an order is cancelled                     ||
-| sales.shipment.created   | When a new shipment is created                 |                |
-| sales.invoice.created    | When a new invoice is created                  |                 |
-| sales.invoice.paid       | When an invoice is paid                        |                 |
-| sales.creditmemo.created | When a new creditmemo is created               |              |
+| sales.order.created      | When a new order is created                           |                  |
+| sales.order.updated      | When the state of an existing order is changed        ||
+| sales.order.paid         | When an order is fully paid                           ||
+| sales.order.shipped      | When an order is fully shipped                        ||
+| sales.order.holded       | When an order is set "on hold"                        ||
+| sales.order.unholded     | When an order is released from "on hold"              ||
+| sales.order.cancelled    | When an order is cancelled                            ||
+| sales.shipment.created   | When a new shipment is created                        |                |
+| sales.invoice.created    | When a new invoice is created                         |                 |
+| sales.invoice.paid       | When an invoice is paid                               |                 |
+| sales.creditmemo.created | When a new creditmemo is created                      |              |
+| catalog.product.created  | When a new product is created                         |              |
+| catalog.product.updated  | When a product is updated                             |              |
 
 You can use these events by
 
