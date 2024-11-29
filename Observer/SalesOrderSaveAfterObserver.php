@@ -98,6 +98,6 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
 
     private function isOrderCancelled(Order $order): bool
     {
-        return ($order->isCanceled()) && $order->getOrigData('state') != 'canceled';
+        return ($order->isCanceled()) && $order->getOrigData('state') != Magento\Sales\Model\Order::STATE_CANCELED;
     }
 }
