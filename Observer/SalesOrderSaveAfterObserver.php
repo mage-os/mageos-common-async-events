@@ -88,16 +88,16 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
 
     private function isOrderHolded(Order $order): bool
     {
-        return ($order->getState() == 'holded') && $order->getOrigData('state') != 'holded';
+        return ($order->getState() == Order::STATE_HOLDED) && $order->getOrigData('state') != Order::STATE_HOLDED;
     }
 
     private function isOrderUnholded(Order $order): bool
     {
-        return ($order->getState() != 'holded') && $order->getOrigData('state') == 'holded';
+        return ($order->getState() != Order::STATE_HOLDED) && $order->getOrigData('state') == Order::STATE_HOLDED;
     }
 
     private function isOrderCancelled(Order $order): bool
     {
-        return ($order->isCanceled()) && $order->getOrigData('state') != Magento\Sales\Model\Order::STATE_CANCELED;
+        return ($order->isCanceled()) && $order->getOrigData('state') != Order::STATE_CANCELED;
     }
 }
