@@ -83,7 +83,8 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
 
     private function isOrderPaid(Order $order): bool
     {
-        return $order->getBaseTotalDue() == 0 && $order->getOrigData('base_total_due') != 0;
+        return $order->getBaseTotalDue() == 0 &&
+            ($this->isOrderNew($order) || $order->getOrigData('base_total_due') != 0);
     }
 
     private function isOrderHolded(Order $order): bool
