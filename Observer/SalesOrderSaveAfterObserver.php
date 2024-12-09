@@ -5,6 +5,7 @@ namespace MageOS\CommonAsyncEvents\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Sales\Model\Order;
 use MageOS\CommonAsyncEvents\Model\ProcessedOrdersRegistry;
 use MageOS\CommonAsyncEvents\Service\PublishingService;
@@ -13,7 +14,8 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
 {
     public function __construct(
         private readonly PublishingService $publisherService,
-        private readonly ProcessedOrdersRegistry $processedOrdersRegistry
+        private readonly ProcessedOrdersRegistry $processedOrdersRegistry,
+        private readonly PriceCurrencyInterface $priceCurrency,
     ) {
     }
 
@@ -83,8 +85,9 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
 
     private function isOrderPaid(Order $order): bool
     {
-        return $order->getBaseTotalDue() == 0 &&
-            ($this->isOrderNew($order) || $order->getOrigData('base_total_due') != 0);
+        $roundedPrice = $this->priceCurrency->roundPrice($order->getBaseTotalDue());
+        $roundedOriginalPrice = $this->priceCurrency->roundPrice($order->getOrigData('base_total_due'));
+        return $roundedPrice == 0 && ($this->isOrderNew($order) || $roundedOriginalPrice != 0);
     }
 
     private function isOrderHolded(Order $order): bool
