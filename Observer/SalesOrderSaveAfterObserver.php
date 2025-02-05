@@ -27,54 +27,23 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
 
         $arguments = ['id' => $order->getId()];
 
-        if ($this->isOrderNew($order)
-            && !$this->processedOrderEventsRegistry->isEventProcessed($order, 'sales.order.created')) {
-            $this->publisherService->publish(
-                'sales.order.created',
-                $arguments
-            );
-            $this->processedOrderEventsRegistry->setEventProcessed($order, 'sales.order.created');
+        if ($this->isOrderNew($order)) {
+            $this->publishEvent($order, 'sales.order.created', $arguments);
         }
-        if ($this->isOrderStatusUpdated($order)
-            && !$this->processedOrderEventsRegistry->isEventProcessed($order, 'sales.order.created')
-            && !$this->processedOrderEventsRegistry->isEventProcessed($order, 'sales.order.updated')) {
-            $this->publisherService->publish(
-                'sales.order.updated',
-                $arguments
-            );
-            $this->processedOrderEventsRegistry->setEventProcessed($order, 'sales.order.updated');
+        if ($this->isOrderStatusUpdated($order)) {
+            $this->publishEvent($order, 'sales.order.updated', $arguments);
         }
-        if ($this->isOrderPaid($order)
-            && !$this->processedOrderEventsRegistry->isEventProcessed($order, 'sales.order.paid')) {
-            $this->publisherService->publish(
-                'sales.order.paid',
-                $arguments
-            );
-            $this->processedOrderEventsRegistry->setEventProcessed($order, 'sales.order.paid');
+        if ($this->isOrderPaid($order)) {
+            $this->publishEvent($order, 'sales.order.paid', $arguments);
         }
-        if ($this->isOrderHolded($order)
-            && !$this->processedOrderEventsRegistry->isEventProcessed($order, 'sales.order.holded')) {
-            $this->publisherService->publish(
-                'sales.order.holded',
-                $arguments
-            );
-            $this->processedOrderEventsRegistry->setEventProcessed($order, 'sales.order.holded');
+        if ($this->isOrderHolded($order)) {
+            $this->publishEvent($order, 'sales.order.holded', $arguments);
         }
-        if ($this->isOrderUnholded($order)
-            && !$this->processedOrderEventsRegistry->isEventProcessed($order, 'sales.order.unholded')) {
-            $this->publisherService->publish(
-                'sales.order.unholded',
-                $arguments
-            );
-            $this->processedOrderEventsRegistry->setEventProcessed($order, 'sales.order.unholded');
+        if ($this->isOrderUnholded($order)) {
+            $this->publishEvent($order, 'sales.unholdedcreated', $arguments);
         }
-        if ($this->isOrderCancelled($order)
-            && !$this->processedOrderEventsRegistry->isEventProcessed($order, 'sales.order.cancelled')) {
-            $this->publisherService->publish(
-                'sales.order.cancelled',
-                $arguments
-            );
-            $this->processedOrderEventsRegistry->setEventProcessed($order, 'sales.order.cancelled');
+        if ($this->isOrderCancelled($order)) {
+            $this->publishEvent($order, 'sales.order.cancelled', $arguments);
         }
 
         $this->processedOrdersRegistry->setOrderProcessed($order);
@@ -109,5 +78,17 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
     private function isOrderCancelled(Order $order): bool
     {
         return ($order->isCanceled()) && $order->getOrigData('state') != Order::STATE_CANCELED;
+    }
+
+    private function publishEvent(Order $order, string $eventName, array $arguments): void
+    {
+        if ($this->processedOrderEventsRegistry->isEventProcessed($order, $eventName)) {
+            return;
+        }
+        $this->publisherService->publish(
+            $eventName,
+            $arguments
+        );
+        $this->processedOrderEventsRegistry->setEventProcessed($order, $eventName);
     }
 }
