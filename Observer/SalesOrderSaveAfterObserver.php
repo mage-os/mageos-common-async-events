@@ -6,14 +6,14 @@ namespace MageOS\CommonAsyncEvents\Observer;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Sales\Model\Order;
-use MageOS\CommonAsyncEvents\Model\ProcessedOrdersRegistry;
+use MageOS\CommonAsyncEvents\Model\ProcessedOrderEventsRegistry;
 use MageOS\CommonAsyncEvents\Service\PublishingService;
 
 class SalesOrderSaveAfterObserver implements ObserverInterface
 {
     public function __construct(
         private readonly PublishingService $publisherService,
-        private readonly ProcessedOrdersRegistry $processedOrdersRegistry
+        private readonly ProcessedOrderEventsRegistry $processedOrderEventsRegistry
     ) {
     }
 
@@ -25,47 +25,56 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
         /** @var Order $order */
         $order = $observer->getEvent()->getData('order');
 
-        if ($this->processedOrdersRegistry->isOrderProcessed($order)) {
-            return;
-        }
-
         $arguments = ['id' => $order->getId()];
 
-        if ($this->isOrderNew($order)) {
+        if ($this->isOrderNew($order)
+            && !$this->processedOrderEventsRegistry->isEventProcessed($order, 'sales.order.created')) {
             $this->publisherService->publish(
                 'sales.order.created',
                 $arguments
             );
+            $this->processedOrderEventsRegistry->setEventProcessed($order, 'sales.order.created');
         }
-        if ($this->isOrderStatusUpdated($order)) {
+        if ($this->isOrderStatusUpdated($order)
+            && !$this->processedOrderEventsRegistry->isEventProcessed($order, 'sales.order.created')
+            && !$this->processedOrderEventsRegistry->isEventProcessed($order, 'sales.order.updated')) {
             $this->publisherService->publish(
                 'sales.order.updated',
                 $arguments
             );
+            $this->processedOrderEventsRegistry->setEventProcessed($order, 'sales.order.updated');
         }
-        if ($this->isOrderPaid($order)) {
+        if ($this->isOrderPaid($order)
+            && !$this->processedOrderEventsRegistry->isEventProcessed($order, 'sales.order.paid')) {
             $this->publisherService->publish(
                 'sales.order.paid',
                 $arguments
             );
+            $this->processedOrderEventsRegistry->setEventProcessed($order, 'sales.order.paid');
         }
-        if ($this->isOrderHolded($order)) {
+        if ($this->isOrderHolded($order)
+            && !$this->processedOrderEventsRegistry->isEventProcessed($order, 'sales.order.holded')) {
             $this->publisherService->publish(
                 'sales.order.holded',
                 $arguments
             );
+            $this->processedOrderEventsRegistry->setEventProcessed($order, 'sales.order.holded');
         }
-        if ($this->isOrderUnholded($order)) {
+        if ($this->isOrderUnholded($order)
+            && !$this->processedOrderEventsRegistry->isEventProcessed($order, 'sales.order.unholded')) {
             $this->publisherService->publish(
                 'sales.order.unholded',
                 $arguments
             );
+            $this->processedOrderEventsRegistry->setEventProcessed($order, 'sales.order.unholded');
         }
-        if ($this->isOrderCancelled($order)) {
+        if ($this->isOrderCancelled($order)
+            && !$this->processedOrderEventsRegistry->isEventProcessed($order, 'sales.order.cancelled')) {
             $this->publisherService->publish(
                 'sales.order.cancelled',
                 $arguments
             );
+            $this->processedOrderEventsRegistry->setEventProcessed($order, 'sales.order.cancelled');
         }
 
         $this->processedOrdersRegistry->setOrderProcessed($order);
