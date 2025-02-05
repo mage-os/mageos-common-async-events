@@ -45,8 +45,6 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
         if ($this->isOrderCancelled($order)) {
             $this->publishEvent($order, 'sales.order.cancelled', $arguments);
         }
-
-        $this->processedOrdersRegistry->setOrderProcessed($order);
     }
 
     private function isOrderNew(Order $order): bool
