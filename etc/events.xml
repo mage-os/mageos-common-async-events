@@ -37,4 +37,12 @@
         <observer name="mageos_common_async_events_catalog_product_save_after"
                   instance="MageOS\CommonAsyncEvents\Observer\ProductSaveAfterObserver"/>
     </event>
+    <event name="cms_page_save_after">
+        <observer name="mageos_common_async_events_page_save_after"
+                  instance="MageOS\CommonAsyncEvents\Observer\CmsPageSaveAfterObserver"/>
+    </event>
+    <event name="cms_block_save_after">
+        <observer name="mageos_common_async_events_block_save_after"
+                  instance="MageOS\CommonAsyncEvents\Observer\CmsBlockSaveAfterObserver"/>
+    </event>
 </config>

@@ -44,6 +44,10 @@ You can now use the following events without having to implement them yourself.
 | sales.creditmemo.created | When a new creditmemo is created                      |         |
 | catalog.product.created  | When a new product is created                         |         |
 | catalog.product.updated  | When a product is updated                             |         |
+| cms.page.created         | When a CMS page has been created                      |         |
+| cms.page.updated         | When a CMS page is updated                            |         |
+| cms.block.created        | When a CMS block has been created                     |         |
+| cms.block.updated        | When a CMS block is updated                           |         |
 
 You can use these events by
 
