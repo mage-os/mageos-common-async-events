@@ -10,20 +10,29 @@ use MageOS\CommonAsyncEvents\Service\PublishingService;
 
 class CmsPageSaveAfterObserver implements ObserverInterface
 {
+    /**
+     * @param PublishingService $publisherService
+     */
     public function __construct(
         private readonly PublishingService $publisherService
     ) {}
 
     /**
      * @see @event magento_cms_api_data_pageinterface_save_after
+     *
+     * @param Observer $observer
+     * @return void
      */
     public function execute(Observer $observer): void
     {
-        /** @var Page $page */
-        $page = $observer->getEvent()->getData('entity');
-        $pageId = $page->getId();
+        $page = $this->getPage($observer);
 
-        // New pages should not have the status "updated" at the same time.
+        if (!$page instanceof Page || !$page->getId()) {
+            return;
+        }
+
+        $pageId = (int)$page->getId();
+
         if ($this->isPageNew($page)) {
             $this->publisherService->publish('cms.page.created', ['pageId' => $pageId]);
             return;
@@ -34,11 +43,30 @@ class CmsPageSaveAfterObserver implements ObserverInterface
         }
     }
 
+    /**
+     * @param Observer $observer
+     * @return mixed
+     */
+    private function getPage(Observer $observer): mixed
+    {
+        return $observer->getEvent()->getData('object')
+            ?? $observer->getEvent()->getData('data_object')
+            ?? $observer->getEvent()->getData('entity');
+    }
+
+    /**
+     * @param Page $page
+     * @return bool
+     */
     private function isPageNew(Page $page): bool
     {
         return empty($page->getOrigData('page_id'));
     }
 
+    /**
+     * @param Page $page
+     * @return bool
+     */
     private function isPageUpdated(Page $page): bool
     {
         $fields = [
@@ -58,6 +86,12 @@ class CmsPageSaveAfterObserver implements ObserverInterface
             || $page->hasDataChanges();
     }
 
+    /**
+     * @param Page $page
+     * @param string $fieldName
+     * @param string $getter
+     * @return bool
+     */
     private function hasFieldChanged(Page $page, string $fieldName, string $getter): bool
     {
         return $page->$getter() !== $page->getOrigData($fieldName);
