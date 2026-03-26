@@ -24,7 +24,7 @@ class CustomerLoginObserver implements ObserverInterface
         /** @var Customer $customer */
         $customer = $observer->getEvent()->getData('customer');
 
-        $eventIdentifier = $this->getEventIdentifier($customer);
+        $eventIdentifier = $this->getEventIdentifier();
         if ($eventIdentifier === null) {
             return;
         }
@@ -36,7 +36,7 @@ class CustomerLoginObserver implements ObserverInterface
         );
     }
 
-    private function getEventIdentifier(Customer $customer): ?string
+    private function getEventIdentifier(): ?string
     {
         return 'customer.login';
     }
