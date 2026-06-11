@@ -4,7 +4,7 @@
   "type": "magento2-module",
   "require": {
     "php":  ">=8.1",
-    "magento/framework": "*",
+    "magento/framework": ">=103.0.8 <103.0.9",
     "mage-os/mageos-async-events": "*"
   },
   "repositories": [

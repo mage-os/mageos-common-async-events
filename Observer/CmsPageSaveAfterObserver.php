@@ -20,7 +20,7 @@ class CmsPageSaveAfterObserver implements ObserverInterface
     public function execute(Observer $observer): void
     {
         /** @var Page $page */
-        $page = $observer->getEvent()->getData('entity');
+        $page = $observer->getEvent()->getData('object');
         $pageId = $page->getId();
 
         // New pages should not have the status "updated" at the same time.

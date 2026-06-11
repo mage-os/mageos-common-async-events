@@ -20,7 +20,7 @@ class CmsBlockSaveAfterObserver implements ObserverInterface
     public function execute(Observer $observer): void
     {
         /** @var Block $block */
-        $block = $observer->getEvent()->getData('entity');
+        $block = $observer->getEvent()->getData('object');
         $blockId = $block->getId();
 
         // New blocks should not have the status "updated" at the same time.
