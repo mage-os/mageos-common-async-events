@@ -16,7 +16,7 @@ class SalesOrderShipmentSaveAfterObserver implements ObserverInterface
     }
 
     /**
-     * @see @event sales_order_shipment_save_after
+     * @see @event sales_order_shipment_save_commit_after
      */
     public function execute(Observer $observer): void
     {
@@ -25,7 +25,7 @@ class SalesOrderShipmentSaveAfterObserver implements ObserverInterface
         if ($this->isShipmentNew($shipment)) {
             $this->publisherService->publish(
                 'sales.shipment.created',
-                ['id' => $shipment->getIncrementId()]
+                ['id' => $shipment->getId()]
             );
         }
         if ($this->isOrderFullyShipped($shipment)) {

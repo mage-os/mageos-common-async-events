@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="customer_save_after">
+    <event name="customer_save_commit_after">
         <observer name="mageos_common_async_events_customer_save_after"
                   instance="MageOS\CommonAsyncEvents\Observer\CustomerSaveAfterObserver"/>
     </event>
@@ -13,24 +13,36 @@
         <observer name="mageos_common_async_events_customer_login"
                   instance="MageOS\CommonAsyncEvents\Observer\CustomerLoginObserver"/>
     </event>
-    <event name="customer_address_save_after">
+    <event name="customer_address_save_commit_after">
         <observer name="mageos_common_async_events_customer_address_save_after"
                   instance="MageOS\CommonAsyncEvents\Observer\CustomerAddressSaveAfterObserver"/>
     </event>
-    <event name="sales_order_save_after">
+    <event name="sales_order_save_commit_after">
         <observer name="mageos_common_async_events_sales_order_save_after"
                   instance="MageOS\CommonAsyncEvents\Observer\SalesOrderSaveAfterObserver"/>
     </event>
-    <event name="sales_order_shipment_save_after">
+    <event name="sales_order_shipment_save_commit_after">
         <observer name="mageos_common_async_events_sales_order_shipment_save_after"
                   instance="MageOS\CommonAsyncEvents\Observer\SalesOrderShipmentSaveAfterObserver"/>
     </event>
-    <event name="sales_order_invoice_save_after">
+    <event name="sales_order_invoice_save_commit_after">
         <observer name="mageos_common_async_events_sales_order_invoice_save_after"
                   instance="MageOS\CommonAsyncEvents\Observer\SalesOrderInvoiceSaveAfterObserver"/>
     </event>
-    <event name="sales_order_creditmemo_save_after">
+    <event name="sales_order_creditmemo_save_commit_after">
         <observer name="mageos_common_async_events_sales_order_creditmemo_save_after"
                   instance="MageOS\CommonAsyncEvents\Observer\SalesOrderCreditmemoSaveAfterObserver"/>
+    </event>
+    <event name="catalog_product_save_after">
+        <observer name="mageos_common_async_events_catalog_product_save_after"
+                  instance="MageOS\CommonAsyncEvents\Observer\ProductSaveAfterObserver"/>
+    </event>
+    <event name="cms_page_save_after">
+        <observer name="mageos_common_async_events_page_save_after"
+                  instance="MageOS\CommonAsyncEvents\Observer\CmsPageSaveAfterObserver"/>
+    </event>
+    <event name="cms_block_save_after">
+        <observer name="mageos_common_async_events_block_save_after"
+                  instance="MageOS\CommonAsyncEvents\Observer\CmsBlockSaveAfterObserver"/>
     </event>
 </config>

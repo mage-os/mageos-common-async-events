@@ -5,60 +5,47 @@ namespace MageOS\CommonAsyncEvents\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Sales\Model\Order;
+use MageOS\CommonAsyncEvents\Model\ProcessedOrderEventsRegistry;
 use MageOS\CommonAsyncEvents\Service\PublishingService;
 
 class SalesOrderSaveAfterObserver implements ObserverInterface
 {
     public function __construct(
-        private readonly PublishingService $publisherService
+        private readonly PublishingService $publisherService,
+        private readonly ProcessedOrderEventsRegistry $processedOrderEventsRegistry,
+        private readonly PriceCurrencyInterface $priceCurrency,
     ) {
     }
 
     /**
-     * @see @event sales_order_save_after
+     * @see @event sales_order_save_commit_after
      */
     public function execute(Observer $observer): void
     {
         /** @var Order $order */
         $order = $observer->getEvent()->getData('order');
-        $arguments = ['id' => $order->getIncrementId()];
+
+        $arguments = ['id' => $order->getId()];
 
         if ($this->isOrderNew($order)) {
-            $this->publisherService->publish(
-                'sales.order.created',
-                $arguments
-            );
+            $this->publishEvent($order, 'sales.order.created', $arguments);
         }
         if ($this->isOrderStatusUpdated($order)) {
-            $this->publisherService->publish(
-                'sales.order.updated',
-                $arguments
-            );
+            $this->publishEvent($order, 'sales.order.updated', $arguments);
         }
         if ($this->isOrderPaid($order)) {
-            $this->publisherService->publish(
-                'sales.order.paid',
-                $arguments
-            );
+            $this->publishEvent($order, 'sales.order.paid', $arguments);
         }
         if ($this->isOrderHolded($order)) {
-            $this->publisherService->publish(
-                'sales.order.holded',
-                $arguments
-            );
+            $this->publishEvent($order, 'sales.order.holded', $arguments);
         }
         if ($this->isOrderUnholded($order)) {
-            $this->publisherService->publish(
-                'sales.order.unholded',
-                $arguments
-            );
+            $this->publishEvent($order, 'sales.unholdedcreated', $arguments);
         }
         if ($this->isOrderCancelled($order)) {
-            $this->publisherService->publish(
-                'sales.order.cancelled',
-                $arguments
-            );
+            $this->publishEvent($order, 'sales.order.cancelled', $arguments);
         }
     }
 
@@ -74,21 +61,35 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
 
     private function isOrderPaid(Order $order): bool
     {
-        return $order->getBaseTotalDue() == 0 && $order->getOrigData('base_total_due') != 0;
+        $roundedPrice = $this->priceCurrency->roundPrice($order->getBaseTotalDue());
+        $roundedOriginalPrice = $this->priceCurrency->roundPrice($order->getOrigData('base_total_due'));
+        return $roundedPrice == 0 && ($this->isOrderNew($order) || $roundedOriginalPrice != 0);
     }
 
     private function isOrderHolded(Order $order): bool
     {
-        return ($order->getState() == 'holded') && $order->getOrigData('state') != 'holded';
+        return ($order->getState() == Order::STATE_HOLDED) && $order->getOrigData('state') != Order::STATE_HOLDED;
     }
 
     private function isOrderUnholded(Order $order): bool
     {
-        return ($order->getState() != 'holded') && $order->getOrigData('state') == 'holded';
+        return ($order->getState() != Order::STATE_HOLDED) && $order->getOrigData('state') == Order::STATE_HOLDED;
     }
 
     private function isOrderCancelled(Order $order): bool
     {
-        return ($order->isCanceled()) && $order->getOrigData('state') != 'cancelled';
+        return ($order->isCanceled()) && $order->getOrigData('state') != Order::STATE_CANCELED;
+    }
+
+    private function publishEvent(Order $order, string $eventName, array $arguments): void
+    {
+        if ($this->processedOrderEventsRegistry->isEventProcessed($order, $eventName)) {
+            return;
+        }
+        $this->publisherService->publish(
+            $eventName,
+            $arguments
+        );
+        $this->processedOrderEventsRegistry->setEventProcessed($order, $eventName);
     }
 }

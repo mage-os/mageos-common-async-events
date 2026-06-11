@@ -16,7 +16,7 @@ class SalesOrderCreditmemoSaveAfterObserver implements ObserverInterface
     }
 
     /**
-     * @see @event sales_order_creditmemo_save_after
+     * @see @event sales_order_creditmemo_save_commit_after
      */
     public function execute(Observer $observer): void
     {
@@ -25,7 +25,7 @@ class SalesOrderCreditmemoSaveAfterObserver implements ObserverInterface
         if ($this->isCreditmemoCreated($creditmemo)) {
             $this->publisherService->publish(
                 'sales.creditmemo.created',
-                ['id' => $creditmemo->getIncrementId()]
+                ['id' => $creditmemo->getId()]
             );
         }
     }

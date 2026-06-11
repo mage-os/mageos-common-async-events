@@ -49,4 +49,22 @@
     <async_event name="sales.creditmemo.created">
         <service class="Magento\Sales\Api\CreditmemoRepositoryInterface" method="get"/>
     </async_event>
+    <async_event name="catalog.product.created">
+        <service class="Magento\Catalog\Api\ProductRepositoryInterface" method="getById"/>
+    </async_event>
+    <async_event name="catalog.product.updated">
+        <service class="Magento\Catalog\Api\ProductRepositoryInterface" method="getById"/>
+    </async_event>
+    <async_event name="cms.page.created">
+        <service class="Magento\Cms\Api\PageRepositoryInterface" method="getById"/>
+    </async_event>
+    <async_event name="cms.page.updated">
+        <service class="Magento\Cms\Api\PageRepositoryInterface" method="getById"/>
+    </async_event>
+    <async_event name="cms.block.created">
+        <service class="Magento\Cms\Api\BlockRepositoryInterface" method="getById"/>
+    </async_event>
+    <async_event name="cms.block.updated">
+        <service class="Magento\Cms\Api\BlockRepositoryInterface" method="getById"/>
+    </async_event>
 </config>

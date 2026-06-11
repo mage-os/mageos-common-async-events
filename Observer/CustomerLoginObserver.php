@@ -17,14 +17,14 @@ class CustomerLoginObserver implements ObserverInterface
     }
 
     /**
-     * @see @event customer_save_after
+     * @see @event customer_login
      */
     public function execute(Observer $observer): void
     {
         /** @var Customer $customer */
         $customer = $observer->getEvent()->getData('customer');
 
-        $eventIdentifier = $this->getEventIdentifier($customer);
+        $eventIdentifier = $this->getEventIdentifier();
         if ($eventIdentifier === null) {
             return;
         }
@@ -36,7 +36,7 @@ class CustomerLoginObserver implements ObserverInterface
         );
     }
 
-    private function getEventIdentifier(Customer $customer): ?string
+    private function getEventIdentifier(): ?string
     {
         return 'customer.login';
     }
