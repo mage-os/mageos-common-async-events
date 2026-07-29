@@ -42,7 +42,7 @@ class SalesOrderSaveAfterObserver implements ObserverInterface
             $this->publishEvent($order, 'sales.order.holded', $arguments);
         }
         if ($this->isOrderUnholded($order)) {
-            $this->publishEvent($order, 'sales.unholdedcreated', $arguments);
+            $this->publishEvent($order, 'sales.order.unholded', $arguments);
         }
         if ($this->isOrderCancelled($order)) {
             $this->publishEvent($order, 'sales.order.cancelled', $arguments);
